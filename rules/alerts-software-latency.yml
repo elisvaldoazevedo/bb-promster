@@ -1,29 +1,20 @@
 groups:
-- name: dependency_alerts
-  rules:
-  - alert: dependency_unresponsive
-    expr: dependency_up < 1
-    for: 2m
-    annotations:
-      description: A dependência {{$labels.name}} do serviço {{$labels.prsn}} não está respondendo.
-      summary: Alerta para caso uma dependência passe mais de 2 minutos sem resposta
-
 - name: suddenly_high_latency
   rules:
   - record: request_seconds_latency
     expr:
-      sum by (addr, prsn, method, status, type) (request_seconds_sum:irate)
+      sum without (instance) (request_seconds_sum:irate)
       /
-      sum by (addr, prsn, method, status, type) (request_seconds_count:irate)
+      sum without (instance) (request_seconds_count:irate)
 
   - record: request_seconds_latency:avg_max
     expr:
       avg_over_time(
         max_over_time(
           avg_over_time(
-            (sum by (addr, prsn, method, status, type) (request_seconds_sum:irate)
+            (sum without (instance) (request_seconds_sum:irate)
             /
-            sum by (addr, prsn, method, status, type) (request_seconds_count:irate)
+            sum without (instance) (request_seconds_count:irate)
             )
           [1m:])
         [20m:])
