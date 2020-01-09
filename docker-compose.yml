@@ -10,6 +10,12 @@ services:
       - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
       - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
 
+    volumes:
+      - etcd-data:/etcd-data
+    command:
+      - /usr/local/bin/etcd
+      - --data-dir=/etcd-data
+
   example:
     image: abilioesteves/prom-expressjs
     ports:
@@ -49,3 +55,6 @@ services:
     environment:
       - BB_PROMSTER_LEVEL=3
       - ETCD_URLS=http://etcd:2379
+  
+volumes:
+  etcd-data:
